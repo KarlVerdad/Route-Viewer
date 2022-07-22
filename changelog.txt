@@ -1,4 +1,4 @@
-v0.1: Path
+v0.2: Route Viewer
 
-- Added Function: Choose start and end locations
-  -> Coordinate array is stored in an array
+- Added view function
+  -> Points in the route can be viewed using UI buttons
