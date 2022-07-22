@@ -1,4 +1,4 @@
-v0.2: Route Viewer
+v0.3: Path Minimization
 
-- Added view function
-  -> Points in the route can be viewed using UI buttons
+- Path is now divided into intervals with the same distance.
+  -> Allows setting of desired distance between points (hardcoded)

@@ -71,16 +71,15 @@ function toCoord(latlng) {
   };
 }
 
-// Uses Geometry interpolation (Not set to use roads)
-function getFullPath2(route) {
+// TODO: Collect all points first then...
+// TODO: Create custom interpolate function to minimize the path
+function getFullPath(route) {
+  // RawPath
   let fullPath = [];
-
   route.legs.forEach(function (leg) {
     leg.steps.forEach(function (step) {
-      const start = step.start_location;
-      const end = step.end_location;
-      for (let i = 0; i < 10; i++) {
-        const p = toCoord(google.maps.geometry.spherical.interpolate(start, end, i * 0.1).toUrlValue(4));
+      step.path.forEach(function (point) {
+        const p = toCoord(point.toUrlValue(10));
 
         if (fullPath.length > 0) {
           const prev = fullPath[fullPath.length - 1].point;
@@ -91,33 +90,6 @@ function getFullPath2(route) {
           const a = google.maps.geometry.spherical.computeHeading(prev, p);
           fullPath[fullPath.length - 1].angle = a;
         }
-        
-        fullPath.push({point: p, angle: 0});
-      }
-    });
-  });
-
-  fullPath[fullPath.length - 1].angle = fullPath[fullPath.length - 2].angle;
-
-  return fullPath
-}
-
-// TODO: Collect all points first then...
-// TODO: Create custom interpolate function to minimize the path
-function getFullPath(route) {
-  const firstPoint = toCoord(route.legs[0].steps[0].path[0].toUrlValue(4));  
-  let fullPath = [{point: firstPoint, angle: 0}];
-
-  route.legs.forEach(function (leg) {
-    leg.steps.forEach(function (step) {
-      step.path.forEach(function (point) {
-        const p = toCoord(point.toUrlValue(4));
-        const prev = fullPath[fullPath.length - 1].point;
-        if (p.lat == prev.lat && p.lng == prev.lng) {
-          return;
-        }
-        const a = google.maps.geometry.spherical.computeHeading(prev, p);
-        fullPath[fullPath.length - 1].angle = a;
 
         fullPath.push({point: p, angle: 0});
       });
@@ -126,7 +98,41 @@ function getFullPath(route) {
 
   fullPath[fullPath.length - 1].angle = fullPath[fullPath.length - 2].angle;
 
-  return fullPath
+  // Minimize Path
+  const threshold = 20; // meters - minimum of 20m
+  let minimizedPath = [fullPath[0]];
+  let dist = 0;
+
+  for (let i = 1; i < fullPath.length; i++) {
+    const p1 = fullPath[i - 1];
+    const p2 = fullPath[i];
+
+    const rem_dist = threshold - dist;
+    const p_dist = google.maps.geometry.spherical.computeDistanceBetween(p1.point, p2.point);
+
+    if (p_dist > rem_dist) {
+      const next_p = toCoord(google.maps.geometry.spherical.computeOffset(p1.point, rem_dist, p1.angle).toUrlValue(10));
+      minimizedPath.push({point: next_p, angle: p1.angle});
+      dist = p_dist - rem_dist; 
+
+      // For low threshold values
+      let curr_p = next_p;
+      while (dist > threshold) {
+        const low_p = toCoord(google.maps.geometry.spherical.computeOffset(curr_p, threshold, p1.angle).toUrlValue(10));
+        minimizedPath.push({point: low_p, angle: p1.angle});
+
+        curr_p = low_p;
+        dist -= threshold;
+      }
+
+    } else {
+      dist += p_dist;
+    }
+  }
+
+  minimizedPath.push(fullPath[fullPath.length - 1])
+
+  return minimizedPath;
 }
 
 function clamp(num, min, max) {
@@ -143,7 +149,7 @@ function view(index) {
     linksControl: false,
   }
   const pano = new google.maps.StreetViewPanorama(document.getElementById("view"), panoSettings);
-  console.log(panoSettings.position, panoSettings.pov)
+  //console.log(panoSettings.position, panoSettings.pov)
   globalInd = index;
 }
 
