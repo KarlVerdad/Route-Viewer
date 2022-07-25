@@ -4,6 +4,11 @@ let globalInd = 0;
 let isPlaying = false;
 let playInterval = null;
 
+let activeMarker = null;
+
+let hardDelay = 2000;     // Delay for slideshow interval
+let pathInterval = 50;    // Distance per slide (meters)
+
 function init() {
   // Map
   const mapOptions = {
@@ -12,7 +17,9 @@ function init() {
     streetViewControl: false,
     mapTypeControl: false,
   };
-  const map = new google.maps.Map(document.getElementById("map"), mapOptions);
+  const mapElement = document.getElementById("map");
+  const map = new google.maps.Map(mapElement, mapOptions);
+  mapElement.map = map;
 
   var options = {
     types: [],
@@ -50,6 +57,20 @@ function init() {
   document.getElementById("view_prev").onclick = view_prev_btn;
   document.getElementById("view_btn").onclick = view_btn;
   document.getElementById("play_btn").onclick = togglePlay;
+
+  const collapsibles = document.getElementsByClassName("collapsible");
+  for (i = 0; i < collapsibles.length; i++) {
+    collapsibles[i].addEventListener("click", function() {
+      this.classList.toggle("active")
+
+      var content = this.nextElementSibling;
+      if (this.classList.contains("active")) {
+        content.style.display = "block";
+      } else {
+        content.style.display = "none";
+      }
+    });
+  }
 }
 
 function calcRoute(service, renderer) {
@@ -84,8 +105,6 @@ function toCoord(latlng) {
   };
 }
 
-// TODO: Collect all points first then...
-// TODO: Create custom interpolate function to minimize the path
 function getFullPath(route) {
   // RawPath
   let fullPath = [];
@@ -112,7 +131,7 @@ function getFullPath(route) {
   fullPath[fullPath.length - 1].angle = fullPath[fullPath.length - 2].angle;
 
   // Minimize Path
-  const threshold = 20; // meters - minimum of 20m
+  const threshold = pathInterval; // meters - minimum of 20m
   let minimizedPath = [fullPath[0]];
   let dist = 0;
 
@@ -153,6 +172,13 @@ function clamp(num, min, max) {
 }
 
 function view(index) {
+  // Remove previous streetview
+  let viewElement = document.getElementById("view");
+  while (viewElement.hasChildNodes()) {
+    viewElement.removeChild(viewElement.lastChild);
+  }
+
+  // Streetview
   index = clamp(index, 0, globalPath.length - 1);
   let panoSettings = {
     position: globalPath[index].point,
@@ -163,9 +189,26 @@ function view(index) {
   }
   const pano = new google.maps.StreetViewPanorama(document.getElementById("view"), panoSettings);
   globalInd = index;
+
+  // Marker
+  if (activeMarker != null) {
+    activeMarker.setMap(null);
+    activeMarker = null;
+  }
+
+  let mapElement = document.getElementById("map");
+  let markerOptions = {
+    position: globalPath[index].point,
+    map: mapElement.map,
+  }
+  activeMarker = new google.maps.Marker(markerOptions);
+  
+  mapElement.map.panTo(globalPath[index].point);
+  mapElement.map.setZoom(18);
 }
 
 function view_btn() {
+  view(globalInd);
   minimizeMap();
   document.getElementById("view_btn").style.display = "none";
   document.getElementById("timeline-controls").style.display = "block";
@@ -191,11 +234,11 @@ function togglePlay() {
 function play() {
   isPlaying = true;
   document.getElementById("play_btn").textContent = "Pause";
-  const delay = 1000;
+  const delay = hardDelay;
   
   const next = function() {
-    if (globalInd >= globalPath.length - 1) {
-      clearInterval(playInterval)
+    if (globalInd >= globalPath.length - 2) {
+      pause();
     }    
     view_next();
   }
@@ -210,5 +253,5 @@ function pause() {
 }
 
 function minimizeMap() {
-  document.getElementById("map").classList.add("minimap");
+  document.getElementById("map-container").classList.add("minimap");
 }

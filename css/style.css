@@ -6,17 +6,53 @@ body {
   font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
 }
 
-#map {
+#map-container {
+  background-color: gray;
   position: absolute;
   height: 100%;
   width: 100%;
   z-index: 2;
 }
 
+#map {
+  height: 100%;
+}
+
 #view {
   position: absolute;
   height: 100%;
   width: 100%;
+}
+
+.collapsible {
+  background-color: gray;
+  color: #444;
+  cursor: pointer;
+  padding: 18px;
+  width: 100%;
+  text-align: center;
+  border: none;
+  outline: none;
+  font-size: 15px;
+  font-weight: bold;
+  color: white;
+}
+
+.collapsible:hover {
+  background-color: darkgray;
+}
+
+.collapsible:after {
+  position: absolute;
+  content: '\25BC'; /* Unicode (▼) */
+  font-size: 13px;
+  color: white;
+  float: right;
+  right: 20px;
+}
+
+.active:after {
+  content: "\25B2"; /* Unicode (▲)*/
 }
 
 .invisible-container {
@@ -59,11 +95,16 @@ body {
     height: 100%;
     width: 100%;
     margin: 0px;
+    padding: 0px;
+    border-width: 0px;
   }
   to {
     height: 40%;
     width: 20%;
     margin: 10px;
+    padding: 4px;
+    border: 2px solid;
+    border-color: lightgray rgb(80, 80, 80) rgb(80, 80, 80) lightgray;
   }
 }
 

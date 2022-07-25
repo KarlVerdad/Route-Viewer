@@ -13,9 +13,9 @@
 
 <body>
   <div class="invisible-container">
+    <button type="button", class="collapsible active">Route Viewer</button>
     <div class="form-container">
       <form>
-        <label>Find route between 2 locations.</label>
         <input id="start" type="text" placeholder="Origin">
         <br>
         <input id="end" type="text", placeholder="Destination">
@@ -34,14 +34,13 @@
     </div>
   </div>
   
-
-  <div id="map"></div>
+  <div id="map-container">
+    <div id="map"></div>
+  </div>
   <div id="view"></div>
 
-  <!-- TODO: Views to preload images -->
-
   <script defer
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDwWKpIuD0YVqLjDohbUqgOeYxsKvgTPM0&libraries=places&callback=init"></script>
+    src="https://maps.googleapis.com/maps/api/js?key=APIKEY&libraries=places&callback=init"></script>
 </body>
 
 </html>

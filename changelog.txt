@@ -1,6 +1,4 @@
-v0.4: Slideshow
+v0.5: Minimap Marker
 
-- Added Play button that shows a slideshow of the route
-  -> Continue interval is currently hardcoded
-- Combined streetview and map into one screen
-  -> Map is now minimized when viewing streetview
+- Added Marker that indicates current position on the map
+- Properly disposes of past street views
