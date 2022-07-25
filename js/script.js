@@ -1,14 +1,16 @@
 let globalPath = [];
 let globalInd = 0;
 
-function init() {
-  console.log("Initializing");
+let isPlaying = false;
+let playInterval = null;
 
+function init() {
   // Map
   const mapOptions = {
     center: { lat: 14.6091, lng: 121.0223 },
     zoom: 7,
     streetViewControl: false,
+    mapTypeControl: false,
   };
   const map = new google.maps.Map(document.getElementById("map"), mapOptions);
 
@@ -31,16 +33,26 @@ function init() {
   const onChangeHandler = function () {
     calcRoute(directionsService, directionsRenderer);
   };
-  document.getElementById("calculate").onclick = onChangeHandler;
+  document.getElementById("calculate_btn").onclick = onChangeHandler;
   
   // Interface
-  document.getElementById("view_next").onclick = view_next;
-  document.getElementById("view_prev").onclick = view_prev;
+  const view_next_btn = function() {
+    view_next();
+    pause();
+  }
+
+  const view_prev_btn = function() {
+    view_prev();
+    pause();
+  }
+
+  document.getElementById("view_next").onclick = view_next_btn;
+  document.getElementById("view_prev").onclick = view_prev_btn;
+  document.getElementById("view_btn").onclick = view_btn;
+  document.getElementById("play_btn").onclick = togglePlay;
 }
 
 function calcRoute(service, renderer) {
-  console.log("Calculating Route");
-
   let request = {
     origin: document.getElementById("start").value,
     destination: document.getElementById("end").value,
@@ -52,10 +64,11 @@ function calcRoute(service, renderer) {
 
       const route = result.routes[0];
       let fullPath = getFullPath(route);
-      console.log(fullPath);
+      //console.log(fullPath);
 
       globalPath = fullPath;
       view(0);
+      document.getElementById("timeline-container").classList.add("fade-in");
 
     } else {
       alert("Route Invalid");
@@ -149,8 +162,13 @@ function view(index) {
     linksControl: false,
   }
   const pano = new google.maps.StreetViewPanorama(document.getElementById("view"), panoSettings);
-  //console.log(panoSettings.position, panoSettings.pov)
   globalInd = index;
+}
+
+function view_btn() {
+  minimizeMap();
+  document.getElementById("view_btn").style.display = "none";
+  document.getElementById("timeline-controls").style.display = "block";
 }
 
 function view_next() {
@@ -159,4 +177,38 @@ function view_next() {
 
 function view_prev() {
   view(globalInd - 1);
+}
+
+function togglePlay() {
+  if (isPlaying) {
+    pause();
+  }
+  else {
+    play();
+  }
+}
+
+function play() {
+  isPlaying = true;
+  document.getElementById("play_btn").textContent = "Pause";
+  const delay = 1000;
+  
+  const next = function() {
+    if (globalInd >= globalPath.length - 1) {
+      clearInterval(playInterval)
+    }    
+    view_next();
+  }
+
+  playInterval = setInterval(next, delay);
+}
+
+function pause() {
+  isPlaying = false;
+  document.getElementById("play_btn").textContent = "Play";
+  clearInterval(playInterval);
+}
+
+function minimizeMap() {
+  document.getElementById("map").classList.add("minimap");
 }

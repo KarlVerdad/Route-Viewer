@@ -1,4 +1,6 @@
-v0.3: Path Minimization
+v0.4: Slideshow
 
-- Path is now divided into intervals with the same distance.
-  -> Allows setting of desired distance between points (hardcoded)
+- Added Play button that shows a slideshow of the route
+  -> Continue interval is currently hardcoded
+- Combined streetview and map into one screen
+  -> Map is now minimized when viewing streetview

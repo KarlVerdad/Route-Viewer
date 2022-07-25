@@ -12,25 +12,36 @@
 </head>
 
 <body>
-  <div class="form-container">
-    <form>
-      <label>Find route between 2 locations.</label>
-      <input id="start" type="text" placeholder="Origin">
-      <br>
-      <input id="end" type="text", placeholder="Destination">
-    </form>
-    <button id="calculate">Route</button>
+  <div class="invisible-container">
+    <div class="form-container">
+      <form>
+        <label>Find route between 2 locations.</label>
+        <input id="start" type="text" placeholder="Origin">
+        <br>
+        <input id="end" type="text", placeholder="Destination">
+      </form>
+      <button id="calculate_btn">Route</button>
+    </div>
+    
+    <div class="form-container" id="timeline-container">
+      <button id="view_btn">View</button>
+      <div id="timeline-controls">
+        <button id="view_prev"><<</button>
+        <button id="play_btn">Play</button>
+        <button id="view_next">>></button>
+      </div>
+      
+    </div>
   </div>
-  <div id="map"></div>
+  
 
-  <div class="form-container">
-    <button id="view_prev"><<</button>
-    <button id="view_next">>></button>
-  </div>
+  <div id="map"></div>
   <div id="view"></div>
 
+  <!-- TODO: Views to preload images -->
+
   <script defer
-    src="https://maps.googleapis.com/maps/api/js?key=APIKEY&libraries=places&callback=init"></script>
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDwWKpIuD0YVqLjDohbUqgOeYxsKvgTPM0&libraries=places&callback=init"></script>
 </body>
 
 </html>
