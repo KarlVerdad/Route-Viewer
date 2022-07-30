@@ -1,13 +1,27 @@
 let globalPath = [];
 let globalInd = 0;
 
+let firstClick = false;
 let isPlaying = false;
-let playInterval = null;
+let positionUpdated = false;
 
+let playInterval = null;
+let rotInterval = null;
+
+let activePov = {heading: 0, pitch: 0};
 let activeMarker = null;
 
 let hardDelay = 2000;     // Delay for slideshow interval
-let pathInterval = 50;    // Distance per slide (meters)
+let pathInterval = 20;    // Distance per slide (meters)
+
+let mapIcon = {
+  path: "M0 -32 L24 32 L0 16 L-24 32 Z",
+  fillColor: '#EA4335',
+  fillOpacity: 1,
+  strokeWeight: 0,
+  scale: .5,
+  rotation: 0,
+}
 
 function init() {
   // Map
@@ -25,6 +39,16 @@ function init() {
     types: [],
   };
 
+  // Marker
+  let markerOptions = {
+    map: map,
+    icon: mapIcon,
+  }
+  activeMarker = new google.maps.Marker(markerOptions);
+
+  // Streetview
+  initialize_view();
+
   // Autocomplete
   var input1 = document.getElementById("start");
   var autocomplete1 = new google.maps.places.Autocomplete(input1, options);
@@ -39,6 +63,7 @@ function init() {
 
   const onChangeHandler = function () {
     calcRoute(directionsService, directionsRenderer);
+    pause();
   };
   document.getElementById("calculate_btn").onclick = onChangeHandler;
   
@@ -71,6 +96,7 @@ function init() {
       }
     });
   }
+  
 }
 
 function calcRoute(service, renderer) {
@@ -85,11 +111,14 @@ function calcRoute(service, renderer) {
 
       const route = result.routes[0];
       let fullPath = getFullPath(route);
-      //console.log(fullPath);
 
       globalPath = fullPath;
+      document.getElementById("view").pano.setPosition(globalPath[globalInd].position);
+      document.getElementById("view").pano.setPov({heading: globalPath[globalInd].angle, pitch: 0});
       view(0);
       document.getElementById("timeline-container").classList.add("fade-in");
+
+      firstClick = true;
 
     } else {
       alert("Route Invalid");
@@ -171,44 +200,81 @@ function clamp(num, min, max) {
   return Math.min(Math.max(num, min), max);
 }
 
-function view(index) {
-  // Remove previous streetview
-  let viewElement = document.getElementById("view");
-  while (viewElement.hasChildNodes()) {
-    viewElement.removeChild(viewElement.lastChild);
-  }
-
+function initialize_view() {
   // Streetview
-  index = clamp(index, 0, globalPath.length - 1);
   let panoSettings = {
-    position: globalPath[index].point,
-    pov: {heading: globalPath[index].angle, pitch: 0},
+    pov: {heading: 0, pitch: 0},
     clickToGo: false,
     scrollwheel: false,
     linksControl: false,
+    panControl: false,
+    zoomControl: false,
+    fullscreenControl: false,
+    source: google.maps.StreetViewSource.OUTDOOR,
   }
+  const viewElement = document.getElementById("view");
   const pano = new google.maps.StreetViewPanorama(document.getElementById("view"), panoSettings);
+  viewElement.pano = pano;
+  globalInd = 0;
+
+  pano.addListener("position_changed", function(){
+    if (positionUpdated) {
+      // FIX BUG: Tweens from small positive to small negative
+      const viewElement = document.getElementById("view");
+      activePov = {heading: absDeg(viewElement.pano.getPov().heading), pitch: 0};
+
+      const targetAngle = absDeg(globalPath[globalInd].angle);
+      //console.log(activePov.heading, targetAngle);
+
+      createjs.Tween.get(activePov).to({heading: targetAngle}, 2000,
+        createjs.Ease.cubicOut).call(function(){ clearInterval(rotInterval) });
+      
+      rotInterval = setInterval(function(){
+        const newPov = {heading: negDeg(activePov.heading), pitch: 0};
+        viewElement.pano.setPov(newPov);
+      }, 10);
+    }
+    positionUpdated = !(positionUpdated);
+  });
+}
+
+function absDeg(angle) {
+  if (angle <= 0) {
+    //console.log(`Negative: ${angle}`);
+    return 360 + angle;
+  }
+  return angle;
+}
+
+function negDeg(angle) {
+  if (angle >= 180) {
+    return angle - 360;
+  }
+  return angle
+}
+
+function view(index) {
+  index = clamp(index, 0, globalPath.length - 1);
+
+  // Streetview
+  const viewElement = document.getElementById("view");
+  viewElement.pano.setPosition(globalPath[index].point);
+  //viewElement.pano.setPov({heading: globalPath[index].angle, pitch: 0});
   globalInd = index;
 
-  // Marker
-  if (activeMarker != null) {
-    activeMarker.setMap(null);
-    activeMarker = null;
-  }
-
   let mapElement = document.getElementById("map");
-  let markerOptions = {
-    position: globalPath[index].point,
-    map: mapElement.map,
-  }
-  activeMarker = new google.maps.Marker(markerOptions);
+  mapIcon.rotation = globalPath[index].angle;
+  activeMarker.setIcon(mapIcon);
+  activeMarker.setPosition(globalPath[index].point);
   
   mapElement.map.panTo(globalPath[index].point);
-  mapElement.map.setZoom(18);
+  if (firstClick) {
+    mapElement.map.setZoom(18);
+    firstClick = false;
+  }
 }
 
 function view_btn() {
-  view(globalInd);
   minimizeMap();
   document.getElementById("view_btn").style.display = "none";
   document.getElementById("timeline-controls").style.display = "block";
@@ -232,6 +298,9 @@ function togglePlay() {
 }
 
 function play() {
+  let mapElement = document.getElementById("map");
+  mapElement.map.panTo(globalPath[globalInd].point);
+
   isPlaying = true;
   document.getElementById("play_btn").textContent = "Pause";
   const delay = hardDelay;
@@ -244,14 +313,30 @@ function play() {
   }
 
   playInterval = setInterval(next, delay);
+
+  // Turn on input blocker
+  document.getElementById("input-blocker").style.display = "visible";
 }
 
 function pause() {
   isPlaying = false;
   document.getElementById("play_btn").textContent = "Play";
   clearInterval(playInterval);
+
+  // Turn off input blocker
+  document.getElementById("input-blocker").style.display = "none";
 }
 
 function minimizeMap() {
   document.getElementById("map-container").classList.add("minimap");
+}
+
+
+function rot() {
+  const viewElement = document.getElementById("view");
+  setInterval(function(){
+    let pov = viewElement.pano.getPov();
+    pov.heading += 1;
+    viewElement.pano.setPov(pov);
+  }, 100);
 }

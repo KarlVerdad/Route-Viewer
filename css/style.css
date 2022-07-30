@@ -11,7 +11,7 @@ body {
   position: absolute;
   height: 100%;
   width: 100%;
-  z-index: 2;
+  z-index: 3;
 }
 
 #map {
@@ -22,6 +22,14 @@ body {
   position: absolute;
   height: 100%;
   width: 100%;
+}
+
+#input-blocker {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  z-index: 2;
+  display: visible;
 }
 
 .collapsible {
@@ -61,7 +69,7 @@ body {
   right: 0;
   margin: 10px auto;
   width: 400px;
-  z-index: 3;
+  z-index: 4;
 }
 
 .form-container {

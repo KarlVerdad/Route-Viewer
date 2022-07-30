@@ -1,0 +1,6 @@
+Known Bugs
+-> Tweening from small positive to small negative numbers (and vice versa) for degrees
+-> Change angle setInterval not stopping when interrupting
+
+Ideas
+-> Set angle before moving position (delay the setPosition call)

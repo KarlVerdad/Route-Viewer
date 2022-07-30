@@ -1,4 +1,9 @@
-v0.5: Minimap Marker
+v0.6: Slideshow Optimizations
 
-- Added Marker that indicates current position on the map
-- Properly disposes of past street views
+- Only creates a single streetview instance
+- Removed changing of POV when changing positions
+  -> View pans to direction automatically
+- Removed zooming of map when changing positions
+  -> Map only zooms when clicking a button for the first time
+- Changed marker icon
+  -> Marker now points to the direction of travel
