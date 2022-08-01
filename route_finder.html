@@ -12,8 +12,10 @@
 </head>
 
 <body>
+  <!--
   <div class="invisible-container">
     <button type="button", class="collapsible active">Route Viewer</button>
+    
     <div class="form-container">
       <form>
         <input id="start" type="text" placeholder="Origin">
@@ -33,14 +35,46 @@
       
     </div>
   </div>
-  
-  <div id="map-container">
-    <div id="map"></div>
+  -->
+
+  <!--<button id="nav-btn">Nav</button>-->
+
+  <div class="vertical-container">
+    <div id="top-bar">
+      <div class="form-container">
+        <form>
+          <div class="gap"></div>
+          <div>
+            <input id="start" type="text" placeholder="Enter Start Location">
+            <button id="hidden_btn" button type="button">Go</button>
+          </div>
+          <div>
+            <input id="end" type="text", placeholder="Enter Destination">
+            <button id="calculate_btn" button type="button">Go</button>
+          </div>
+          <div class="gap"></div>
+        </form>
+      </div>
+    </div>
+    
+    <div id="content">
+      <div id="map-container">
+        <div id="map"></div>
+      </div>
+      <div id="input-blocker"></div>
+      <div id="view"></div>
+    </div>
+
+    <div id="timeline-container">
+      <button id="view_btn">View</button>
+      <div id="timeline-controls">
+        <button id="view_prev"><<</button>
+        <button id="play_btn">Play</button>
+        <button id="view_next">>></button>
+      </div>
+    </div>
   </div>
-  <div id="input-blocker"></div>
-  <div id="view"></div>
-
-
+  
   <script defer
     src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDwWKpIuD0YVqLjDohbUqgOeYxsKvgTPM0&libraries=places&callback=init"></script>
   <script src="https://code.createjs.com/1.0.0/createjs.min.js"></script>

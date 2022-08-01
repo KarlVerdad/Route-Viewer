@@ -1,9 +1,3 @@
-v0.6: Slideshow Optimizations
+v0.7a: Phone Support
 
-- Only creates a single streetview instance
-- Removed changing of POV when changing positions
-  -> View pans to direction automatically
-- Removed zooming of map when changing positions
-  -> Map only zooms when clicking a button for the first time
-- Changed marker icon
-  -> Marker now points to the direction of travel
+- Changed layout to prioritize phones
