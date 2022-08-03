@@ -2,7 +2,7 @@ require('dotenv').config()
 const express = require('express');
 const app = express();
 
-let googleKey = process.env.GOOGLE_APIKEY || AIzaSyDwWKpIuD0YVqLjDohbUqgOeYxsKvgTPM0;
+let googleKey = process.env.GOOGLE_APIKEY || "AIzaSyDwWKpIuD0YVqLjDohbUqgOeYxsKvgTPM0";
 let googleAPI = `https://maps.googleapis.com/maps/api/js?key=${googleKey}&libraries=places&callback=init`
 
 app.set('view engine', 'ejs');
