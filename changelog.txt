@@ -1,3 +1,3 @@
-v0.7b: Node JS Integration
+v0.7b: Node JS Integration (Bug Fix)
 
-- Added Node JS server
+- Removed node_modules folder
