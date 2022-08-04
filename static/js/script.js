@@ -139,6 +139,18 @@ function init() {
     }
   }
   document.getElementById("center_toggle").click();
+
+  // Click outside element
+  document.addEventListener("click", function(event) {
+    const menuBtn = this.getElementById("menu_btn");
+    const menuDropdown = this.getElementById("menu_dropdown");
+
+
+    if (!menuDropdown.contains(event.target) && !menu_btn.contains(event.target) &&
+      menu_btn.classList.contains("active_menu")) {
+      document.getElementById("menu_btn").click();
+    }
+  });
 }
 
 function calcRoute(service, renderer) {

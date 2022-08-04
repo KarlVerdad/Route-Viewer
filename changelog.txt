@@ -1,6 +1,3 @@
-v0.8: Menu Button
+v0.8b: Menu Button
 
-- Added menu Button
-  -> Added toggle to automatically follow Camera
-  -> Added toggle to automatically center marker in map
-- Fixed Bug: Tweening of angles
+- Menu dropdown closes when clicking outside element
