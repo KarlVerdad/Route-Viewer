@@ -11,5 +11,5 @@ app.listen(process.env.PORT || 8080);
 app.use(express.static('static'));
 
 app.get('/', (req, res) => {
-  res.render('route_finder', { googleAPI });
+  res.render('route_viewer', { googleAPI });
 });

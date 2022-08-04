@@ -31,7 +31,7 @@ body {
   z-index: 2;
   display: block;
 }
-
+/* 
 .collapsible {
   background-color: gray;
   color: #444;
@@ -53,6 +53,7 @@ body {
 .collapsible:after {
   position: absolute;
   content: '\25BC'; /* Unicode (▼) */
+/*
   font-size: 13px;
   color: white;
   float: right;
@@ -61,7 +62,9 @@ body {
 
 .active:after {
   content: "\25B2"; /* Unicode (▲)*/
+/*
 }
+*/
 
 .invisible-container {
   position: absolute;
@@ -88,11 +91,66 @@ body {
 }
 
 .form-container .gap {
-  height: 8px;
+  height: 6px;
 }
 
 #hidden_btn {
   visibility: hidden;
+}
+
+#menu_btn {
+  position: absolute;
+  height: 42px;
+  width: 42px;
+  margin: 10px;
+
+  right: 0px;
+  z-index: 4;
+  background-color: white;
+  border-width: 0px;
+  border-radius: 5%;
+}
+
+#menu_btn:hover {
+  background-color: lightgray;
+}
+
+.active_menu {
+  background-color: grey !important;
+}
+
+#menu_dropdown {
+  position: absolute;
+  margin: 10px;
+  margin-top: 62px;
+  right: 0px;
+  z-index: 4;
+
+  background-color: white;
+  display: none;
+}
+
+.dropdown_element {
+  border-width: 0px;
+  border-bottom-width: 2px;
+  border-style: solid;
+  border-color: lightgray;
+  margin: 0px;
+  padding: 8px;
+
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.toggle_btn {
+  border: 0px;
+  height: 20px;
+  width: 20px;
+}
+
+.active_toggle {
+  background-color: grey !important;
 }
 
 #timeline-container {
@@ -101,7 +159,7 @@ body {
   z-index: 4;
   opacity: 0;
   width: 100%;
-
+  visibility: hidden;
   display: flex;
   justify-content: center;
 }
@@ -112,7 +170,6 @@ body {
   border-radius: 50%;
   background-color: grey;
   border-color: lightgray rgb(80, 80, 80) rgb(80, 80, 80) lightgray;
-  opacity: 80%
 }
 
 #timeline-container button:hover {
@@ -144,19 +201,12 @@ body {
 
 #top-bar {
   width: 100%;
-  background-color: green;
   z-index: 4;
 }
 
 #content {
   position: relative;
   flex-grow: 1;
-}
-
-.test {
-  position: absolute;
-  height: 100%;
-  width: 100%
 }
 
 .vertical-container {
@@ -188,9 +238,11 @@ body {
 @keyframes fade-in {
   from {
     opacity: 0;
+    visibility: visible;
   }
   to {
     opacity: 1;
+    visibility: visible;
   }
 }
 

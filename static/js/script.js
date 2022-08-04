@@ -1,14 +1,17 @@
 let globalPath = [];
 let globalInd = 0;
 
+let routeAvailable = false;
 let firstClick = false;
 let isPlaying = false;
 let positionUpdated = true;
+let automaticCamera = false;
+let centerInMap = false;
 
 let playInterval = null;
 let rotInterval = null;
 
-let activePov = {heading: 0, pitch: 0};
+let angleDiff = { angle: 0 };
 let activeMarker = null;
 
 let hardDelay = 2000;     // Delay for slideshow interval
@@ -99,17 +102,43 @@ function init() {
   const collapsibles = document.getElementsByClassName("collapsible");
   for (i = 0; i < collapsibles.length; i++) {
     collapsibles[i].addEventListener("click", function() {
-      this.classList.toggle("active")
+      this.classList.toggle("active_menu");
 
       var content = this.nextElementSibling;
-      if (this.classList.contains("active")) {
+      if (this.classList.contains("active_menu")) {
         content.style.display = "block";
       } else {
         content.style.display = "none";
       }
     });
   }
-  
+
+  document.getElementById("POV_toggle").onclick = function() {
+    this.classList.toggle("active_toggle");
+    if (this.classList.contains("active_toggle")) {
+      // Turn on input blocker
+      document.getElementById("input-blocker").style.display = "block";
+      automaticCamera = true;
+    } else {
+      // Turn off input blocker
+      document.getElementById("input-blocker").style.display = "none";
+      automaticCamera = false;
+    }
+  }
+  document.getElementById("POV_toggle").click();
+
+  document.getElementById("center_toggle").onclick = function() {
+    this.classList.toggle("active_toggle");
+    if (this.classList.contains("active_toggle")) {
+      centerInMap = true;
+      if (routeAvailable) {
+        centerToMap();
+      }
+    } else {
+      centerInMap = false;
+    }
+  }
+  document.getElementById("center_toggle").click();
 }
 
 function calcRoute(service, renderer) {
@@ -133,7 +162,7 @@ function calcRoute(service, renderer) {
       document.getElementById("timeline-container").classList.add("fade-in");
 
       firstClick = true;
-
+      routeAvailable = true;
     } else {
       alert("Route Invalid");
     }
@@ -234,38 +263,45 @@ function initialize_view() {
 
   pano.addListener("position_changed", function(){
     if (positionUpdated) {
-      // FIX BUG: Tweens from small positive to small negative
-      const viewElement = document.getElementById("view");
-      activePov = {heading: absDeg(viewElement.pano.getPov().heading), pitch: 0};
+      if (automaticCamera) {
+        clearInterval(rotInterval);
+        const viewElement = document.getElementById("view");
+        const currAngle = viewElement.pano.getPov().heading;
+        const targetAngle = globalPath[globalInd].angle;
 
-      const targetAngle = absDeg(globalPath[globalInd].angle);
-      //console.log(activePov.heading, targetAngle);
+        let targetDiff = calcSignedAngleDiff(currAngle, targetAngle);
+        //console.log(`${currAngle}->${targetAngle}\n${targetDiff}`);
+        angleDiff = { angle: 0 };
 
-      createjs.Tween.get(activePov).to({heading: targetAngle}, 2000,
-        createjs.Ease.cubicOut).call(function(){ clearInterval(rotInterval) });
-      
-      rotInterval = setInterval(function(){
-        const newPov = {heading: negDeg(activePov.heading), pitch: 0};
-        viewElement.pano.setPov(newPov);
-      }, 10);
+        createjs.Tween.get(angleDiff).to({angle: targetDiff}, hardDelay * 0.5, createjs.Ease.cubicOut)
+          .call(function() { 
+            //console.log("Tween Finished");
+            clearInterval(rotInterval); 
+            
+          });
+
+        rotInterval = setInterval(function(){
+          const newPov = {heading: currAngle + angleDiff.angle, pitch: 0};
+          //console.log(newPov.heading);
+          viewElement.pano.setPov(newPov);
+        }, 10);
+      } else {
+        // Turn off input blocker
+      document.getElementById("input-blocker").style.display = "none";
+      }
+    } else {
+      // Turn on input blocker
+      document.getElementById("input-blocker").style.display = "block";
     }
     positionUpdated = !(positionUpdated);
   });
 }
 
-function absDeg(angle) {
-  if (angle <= 0) {
-    //console.log(`Negative: ${angle}`);
-    return 360 + angle;
-  }
-  return angle;
-}
-
-function negDeg(angle) {
-  if (angle >= 180) {
-    return angle - 360;
-  }
-  return angle
+function calcSignedAngleDiff(curr, target) {
+  let a = target - curr;
+  if (a > 180) a -= 360;
+  if (a < -180) a += 360;
+  return a;
 }
 
 function view(index) {
@@ -282,12 +318,19 @@ function view(index) {
   activeMarker.setIcon(mapIcon);
   activeMarker.setPosition(globalPath[index].point);
   
-  mapElement.map.panTo(globalPath[index].point);
-  if (firstClick) {
-    console.log("ZOOM!");
-    mapElement.map.setZoom(18);
-    firstClick = false;
+  if (centerInMap) {
+    mapElement.map.panTo(globalPath[index].point);
+    if (firstClick) {
+      mapElement.map.setZoom(18);
+    }
   }
+  firstClick = false;
+}
+
+function centerToMap() {
+  let mapElement = document.getElementById("map");
+  mapElement.map.panTo(globalPath[globalInd].point);
+  mapElement.map.setZoom(18);
 }
 
 function view_btn() {
@@ -315,7 +358,7 @@ function togglePlay() {
 
 function play() {
   let mapElement = document.getElementById("map");
-  mapElement.map.panTo(globalPath[globalInd].point);
+  if (centerInMap) mapElement.map.panTo(globalPath[globalInd].point);
 
   isPlaying = true;
   document.getElementById("play_btn").textContent = "Pause";
@@ -329,19 +372,12 @@ function play() {
   }
 
   playInterval = setInterval(next, delay);
-
-  // Turn on input blocker
-  document.getElementById("input-blocker").style.display = "block";
-  console.log(document.getElementById("input-blocker").style.display);
 }
 
 function pause() {
   isPlaying = false;
   document.getElementById("play_btn").textContent = "Play";
   clearInterval(playInterval);
-
-  // Turn off input blocker
-  //document.getElementById("input-blocker").style.display = "none";
 }
 
 function minimizeMap() {

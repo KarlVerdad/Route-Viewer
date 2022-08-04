@@ -1,3 +1,6 @@
-v0.7c: Heroku Support
+v0.8: Menu Button
 
-- Hid the API KEY from frontend
+- Added menu Button
+  -> Added toggle to automatically follow Camera
+  -> Added toggle to automatically center marker in map
+- Fixed Bug: Tweening of angles
