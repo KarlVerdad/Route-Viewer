@@ -72,12 +72,16 @@ function init() {
 
   document.getElementById("start").addEventListener("keypress", function(event) {
     if (event.key === "Enter") {
-      document.getElementById("calculate_btn").click();
+      if (document.getElementById("end").value != "") {
+        document.getElementById("calculate_btn").click();
+      }
     }
   });
   document.getElementById("end").addEventListener("keypress", function(event) {
     if (event.key === "Enter") {
-      document.getElementById("calculate_btn").click();
+      if (document.getElementById("start").value != "") {
+        document.getElementById("calculate_btn").click();
+      }
     }
   });
 

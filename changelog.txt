@@ -1,3 +1,3 @@
-v0.8b: Menu Button
+v0.8c: Bug Fix
 
-- Menu dropdown closes when clicking outside element
+- Fixed Route Viewing with blank routes
