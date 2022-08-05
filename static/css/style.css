@@ -66,6 +66,14 @@ body {
 }
 */
 
+.collapsible {
+  cursor: pointer;
+}
+
+#viewer_btn {
+  display: none;
+}
+
 .invisible-container {
   position: absolute;
   left: 0;
@@ -255,6 +263,58 @@ body {
 
 /* Media Query */
 
-@media only screen and (min-width: 768px) {
+@media only screen and (min-width: 800px) {
+  #viewer_btn {
+    display: block;
+    width: 100%;
+    border-width: 0px;
+    padding: 16px;
 
+    font-size: 15px;
+    font-weight: bold;
+  }
+
+  #viewer_btn:hover {
+    background-color: lightgray;
+  }
+
+  #top-bar {
+    position: absolute;
+    margin: 0 auto;
+    margin-top: 10px;
+    left: 0;
+    right: 0;
+    width: 600px;
+  }
+
+  #view {
+    height: 100%;
+  }
+
+  /* Animations */
+
+  @keyframes minimap {
+    from {
+      height: 100%;
+      width: 100%;
+      margin: 0px;
+      padding: 0px;
+      border-width: 0px;
+    }
+    to {
+      height: 33%;
+      width: 25%;
+      margin: 10px;
+      padding: 4px;
+      border: 2px solid;
+      border-color: lightgray rgb(80, 80, 80) rgb(80, 80, 80) lightgray;
+    }
+  }
+  
+  .minimap {
+    animation-fill-mode: forwards;
+    animation-name: minimap;
+    animation-duration: 1s;
+    animation-timing-function: ease-in-out;
+  }
 }

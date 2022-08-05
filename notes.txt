@@ -1,4 +1,6 @@
 Known Bugs
+-> [Firefox] Minimap does not update when chaging sizes
+  -> Media Queries and animations don't play nice with Firefox
 
 Ideas
 -> Set angle before moving position (delay the setPosition call)

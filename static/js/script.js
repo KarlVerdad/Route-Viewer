@@ -155,6 +155,26 @@ function init() {
       document.getElementById("menu_btn").click();
     }
   });
+
+  // Layout
+  const mqTablet = window.matchMedia("(max-width: 800px)");
+  mqTablet.addEventListener("change", function() {
+    if (this.matches) {
+      document.getElementById("viewer-container").style.display = "block";
+    }
+    else {
+      const viewerBtn = document.getElementById("viewer_btn");
+      if (viewerBtn.classList.contains("active_menu")) {
+        document.getElementById("viewer-container").style.display = "block";
+      } else {
+        document.getElementById("viewer-container").style.display = "none";
+      }
+    }
+
+    const mapContainer = document.getElementById("map-container");
+    mapContainer.classList.remove("minimap");
+    mapContainer.classList.add("minimap");
+  });
 }
 
 function calcRoute(service, renderer) {
