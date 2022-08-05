@@ -1,3 +1,4 @@
-v0.9a: Desktop Support
+v0.9b: Additional Settings
 
-- Added Desktop Support
+- Added setting to change travel distance per interval
+- Added setting to change time interval during play

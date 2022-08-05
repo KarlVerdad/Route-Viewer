@@ -31,40 +31,6 @@ body {
   z-index: 2;
   display: block;
 }
-/* 
-.collapsible {
-  background-color: gray;
-  color: #444;
-  cursor: pointer;
-  padding: 18px;
-  width: 100%;
-  text-align: center;
-  border: none;
-  outline: none;
-  font-size: 15px;
-  font-weight: bold;
-  color: white;
-}
-
-.collapsible:hover {
-  background-color: darkgray;
-}
-
-.collapsible:after {
-  position: absolute;
-  content: '\25BC'; /* Unicode (▼) */
-/*
-  font-size: 13px;
-  color: white;
-  float: right;
-  right: 20px;
-}
-
-.active:after {
-  content: "\25B2"; /* Unicode (▲)*/
-/*
-}
-*/
 
 .collapsible {
   cursor: pointer;
@@ -144,11 +110,25 @@ body {
   border-style: solid;
   border-color: lightgray;
   margin: 0px;
-  padding: 8px;
+  padding: 10px;
+}
 
+.horizontal_flex {
   display: flex;
   justify-content: space-between;
+  flex-direction: row;
   gap: 16px;
+}
+
+.vertical_flex {
+  display: flex;
+  justify-content: space-between;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.dropdown_setting {
+  color: red;
 }
 
 .toggle_btn {
@@ -198,14 +178,6 @@ body {
 #timeline-controls {
   display: none;
 }
-
-/*
-#nav-btn {
-  position: absolute;
-  margin: 10px;
-  z-index: 4;
-}
-*/
 
 #top-bar {
   width: 100%;

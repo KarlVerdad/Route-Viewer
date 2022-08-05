@@ -17,6 +17,9 @@ let activeMarker = null;
 let hardDelay = 2000;     // Delay for slideshow interval
 let pathInterval = 20;    // Distance per slide (meters)
 
+const distanceSettings = [10, 20, 50, 100, 200];
+const timeSettings = [1, 2, 3];
+
 let mapIcon = {
   path: "M0 -32 L24 32 L0 16 L-24 32 Z",
   fillColor: '#EA4335',
@@ -170,11 +173,35 @@ function init() {
         document.getElementById("viewer-container").style.display = "none";
       }
     }
-
-    const mapContainer = document.getElementById("map-container");
-    mapContainer.classList.remove("minimap");
-    mapContainer.classList.add("minimap");
   });
+
+  // Settings
+  const distanceSlider = document.getElementById("distance_slider");
+  const distanceLabel = document.getElementById("distance_label");
+
+  distanceSlider.oninput = function() {
+    pathInterval = distanceSettings[distanceSlider.value];
+    distanceLabel.innerHTML = `${pathInterval}m`;
+  }
+
+  const timeSlider = document.getElementById("time_slider");
+  const timeLabel = document.getElementById("time_label");
+
+  timeSlider.oninput = function() {
+    const val = timeSettings[timeSlider.value];
+
+    hardDelay = val * 1000;
+    timeLabel.innerHTML = `${val}s`;
+
+    if (isPlaying) {
+      pause();
+      play();
+    }
+  }
+
+  // Default Settings
+  distanceSlider.value = 1;
+  timeSlider.value = 1
 }
 
 function calcRoute(service, renderer) {
@@ -239,7 +266,7 @@ function getFullPath(route) {
   fullPath[fullPath.length - 1].angle = fullPath[fullPath.length - 2].angle;
 
   // Minimize Path
-  const threshold = pathInterval; // meters - minimum of 20m
+  const threshold = 1; // meters - minimum of 20m
   let minimizedPath = [fullPath[0]];
   let dist = 0;
 
@@ -309,7 +336,7 @@ function initialize_view() {
         //console.log(`${currAngle}->${targetAngle}\n${targetDiff}`);
         angleDiff = { angle: 0 };
 
-        createjs.Tween.get(angleDiff).to({angle: targetDiff}, hardDelay * 0.5, createjs.Ease.cubicOut)
+        createjs.Tween.get(angleDiff).to({angle: targetDiff}, hardDelay * 0.8, createjs.Ease.quadOut)
           .call(function() { 
             //console.log("Tween Finished");
             clearInterval(rotInterval); 
@@ -376,11 +403,11 @@ function view_btn() {
 }
 
 function view_next() {
-  view(globalInd + 1);
+  view(globalInd + pathInterval);
 }
 
 function view_prev() {
-  view(globalInd - 1);
+  view(globalInd - pathInterval);
 }
 
 function togglePlay() {
@@ -398,7 +425,6 @@ function play() {
 
   isPlaying = true;
   document.getElementById("play_btn").textContent = "Pause";
-  const delay = hardDelay;
   
   const next = function() {
     if (globalInd >= globalPath.length - 2) {
@@ -407,7 +433,7 @@ function play() {
     view_next();
   }
 
-  playInterval = setInterval(next, delay);
+  playInterval = setInterval(next, hardDelay);
 }
 
 function pause() {

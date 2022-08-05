@@ -12,33 +12,6 @@
 </head>
 
 <body>
-  <!--
-  <div class="invisible-container">
-    <button type="button", class="collapsible active">Route Viewer</button>
-    
-    <div class="form-container">
-      <form>
-        <input id="start" type="text" placeholder="Origin">
-        <br>
-        <input id="end" type="text", placeholder="Destination">
-      </form>
-      <button id="calculate_btn">Route</button>
-    </div>
-    
-    <div class="form-container" id="timeline-container">
-      <button id="view_btn">View</button>
-      <div id="timeline-controls">
-        <button id="view_prev"><<</button>
-        <button id="play_btn">Play</button>
-        <button id="view_next">>></button>
-      </div>
-      
-    </div>
-  </div>
-  -->
-
-  <!--<button id="nav-btn">Nav</button>-->
-
   <div class="vertical-container">
     <div id="top-bar">
       <button type="button", id="viewer_btn" class="collapsible active_menu">Route Viewer</button>
@@ -61,17 +34,28 @@
     <div id="content">
       <button id="menu_btn" class="collapsible">M</button>
       <div id="menu_dropdown">
-        <div class="dropdown_element">
+        <div class="dropdown_element horizontal_flex">
           <label>Automatic Camera</label> <button id="POV_toggle" class="toggle_btn">T</button>
         </div>
-        <div class="dropdown_element">
+        <div class="dropdown_element horizontal_flex">
           <label>Center in map</label> <button id="center_toggle" class="toggle_btn">T</button>
         </div>
-        <div class="dropdown_element">
-          <label>Speed</label>
+        <div class="dropdown_element vertical_flex">
+          <div class="horizontal_flex">
+            <label>Travel distance</label>
+            <label id="distance_label" class="dropdown_setting">20m</label>
+          </div>
+          <input id="distance_slider" type="range" min="0" max="4" step="1">
         </div>
-
+        <div class="dropdown_element vertical_flex">
+          <div class="horizontal_flex">
+            <label>Play interval</label>
+            <label id="time_label" class="dropdown_setting">2s</label>
+          </div>
+          <input id="time_slider" type="range" min="0" max="2" step="1">
+        </div>
       </div>
+
       <div id="map-container">
         <div id="map"></div>
       </div>
