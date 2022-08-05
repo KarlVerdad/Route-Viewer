@@ -1,4 +1,4 @@
-v0.9b: Additional Settings
+v0.9c: Additional Settings (Bugfix)
 
-- Added setting to change travel distance per interval
-- Added setting to change time interval during play
+- Optimized travel distance calculation
+- Fixed Input Blocker being too small

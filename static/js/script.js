@@ -266,7 +266,7 @@ function getFullPath(route) {
   fullPath[fullPath.length - 1].angle = fullPath[fullPath.length - 2].angle;
 
   // Minimize Path
-  const threshold = 1; // meters - minimum of 20m
+  const threshold = 10; // meters - minimum of 20m
   let minimizedPath = [fullPath[0]];
   let dist = 0;
 
@@ -333,19 +333,16 @@ function initialize_view() {
         const targetAngle = globalPath[globalInd].angle;
 
         let targetDiff = calcSignedAngleDiff(currAngle, targetAngle);
-        //console.log(`${currAngle}->${targetAngle}\n${targetDiff}`);
         angleDiff = { angle: 0 };
 
         createjs.Tween.get(angleDiff).to({angle: targetDiff}, hardDelay * 0.8, createjs.Ease.quadOut)
           .call(function() { 
-            //console.log("Tween Finished");
             clearInterval(rotInterval); 
             
           });
 
         rotInterval = setInterval(function(){
           const newPov = {heading: currAngle + angleDiff.angle, pitch: 0};
-          //console.log(newPov.heading);
           viewElement.pano.setPov(newPov);
         }, 10);
       } else {
@@ -403,11 +400,13 @@ function view_btn() {
 }
 
 function view_next() {
-  view(globalInd + pathInterval);
+  const indexInterval = (pathInterval / 10);
+  view(globalInd + indexInterval);
 }
 
 function view_prev() {
-  view(globalInd - pathInterval);
+  const indexInterval = (pathInterval / 10);
+  view(globalInd - indexInterval);
 }
 
 function togglePlay() {

@@ -263,6 +263,10 @@ body {
     height: 100%;
   }
 
+  #input-blocker {
+    height: 100%;
+  }
+
   /* Animations */
 
   @keyframes minimap {
